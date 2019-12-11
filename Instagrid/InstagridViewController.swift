@@ -8,13 +8,14 @@
 
 import UIKit
 
-class InstagridViewController: UIViewController {
+class InstagridViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate  {
 
     @IBOutlet weak var bottomRightView: UIView!
     
     @IBOutlet weak var upRightView: UIView!
     
-    @IBOutlet weak var imageView: UIImageView!
+    
+    @IBOutlet weak var bigView: UIView!
     
     @IBOutlet weak var arrow: UIImageView!
     @IBOutlet weak var selectLayout1: UIImageView!
@@ -25,7 +26,7 @@ class InstagridViewController: UIViewController {
     
     
     
-    
+    var currentButton : UIButton?
     
     
     
@@ -37,11 +38,9 @@ class InstagridViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
-    @IBAction func swipeUp(_ sender: Any) {
-        
-        shareTapped()
-        
-        
+    @IBAction func insertImage(_ sender: UIButton) {
+        currentButton = sender
+        showActionSheet()
     }
     
     @IBAction func layout1ButtonClick(_ sender: Any) {
@@ -68,11 +67,71 @@ class InstagridViewController: UIViewController {
         self.selectLayout3.isHidden = false
     }
     
-    @objc func shareTapped() {
-        let vc = UIActivityViewController(activityItems: [imageView.image!], applicationActivities: [])
+    func showActionSheet() {
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: "Camera", style: .default, handler: { (alert:UIAlertAction!) -> Void in
+            self.camera()
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { (alert:UIAlertAction!) -> Void in
+            self.photoLibrary()
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        self.present(actionSheet, animated: true, completion: nil)
+    }
+    
+    func camera(){
+        if UIImagePickerController.isSourceTypeAvailable(.camera){
+            let myPickerController = UIImagePickerController()
+            myPickerController.delegate = self;
+            myPickerController.sourceType = .camera
+            self.present(myPickerController, animated: true, completion: nil)
+        }
+    }
+    
+    func photoLibrary(){
+        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
+            let myPickerController = UIImagePickerController()
+            myPickerController.delegate = self;
+            myPickerController.sourceType = .photoLibrary
+            self.present(myPickerController, animated: true, completion: nil)
+        }
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        if let image = info[.originalImage] as? UIImage {
+            currentButton!.setImage(image, for: .normal)
+            //ne deforme pas l'image et s'adapte à l'espace
+            currentButton!.imageView?.contentMode = .scaleAspectFill
+        }
+        picker.dismiss(animated: true, completion: nil)
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+   
+     
+     @IBAction func swipeUp(_ sender: Any) {
+         
+        shareTapped(im: bigView.asImage())
+     }
+     
+     
+    @objc func shareTapped(im : UIImage) {
+        let vc = UIActivityViewController(activityItems: [im], applicationActivities: [])
         vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
         present(vc, animated: true)
     }
+    
     /*
     // MARK: - Navigation
 
@@ -83,4 +142,11 @@ class InstagridViewController: UIViewController {
     }
     */
 
+}
+extension UIView {
+    func asImage() -> UIImage {
+        let renderer = UIGraphicsImageRenderer(bounds:bounds)
+        return renderer.image { rendererContext in layer.render(in: rendererContext.cgContext)}
+    }
+    
 }
