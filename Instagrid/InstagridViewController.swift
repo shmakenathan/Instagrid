@@ -12,12 +12,13 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
 
     @IBOutlet weak var bottomRightView: UIView!
     
+    @IBOutlet weak var generalView: UIView!
     @IBOutlet weak var upRightView: UIView!
     
     
     @IBOutlet weak var bigView: UIView!
     
-    @IBOutlet weak var arrow: UIImageView!
+
     @IBOutlet weak var selectLayout1: UIImageView!
     
     @IBOutlet weak var selectLayout2: UIImageView!
@@ -34,7 +35,7 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        initializeSwipe()
         // Do any additional setup after loading the view.
     }
     
@@ -85,6 +86,8 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
             myPickerController.delegate = self;
             myPickerController.sourceType = .camera
             self.present(myPickerController, animated: true, completion: nil)
+        } else {
+            print("")
         }
     }
     
@@ -115,15 +118,32 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
     
     
     
-    
-    
-    
+    func initializeSwipe(){
+    let leftSwipe = UISwipeGestureRecognizer(target: self, action: #selector(swipeShare(_:)))
+    let upSwipe = UISwipeGestureRecognizer(target: self, action: #selector(swipeShare(_:)))
+        
+    leftSwipe.direction = .left
+    upSwipe.direction = .up
+
+    view.addGestureRecognizer(leftSwipe)
+    view.addGestureRecognizer(upSwipe)
+    }
    
      
-     @IBAction func swipeUp(_ sender: Any) {
-         
-        shareTapped(im: bigView.asImage())
-     }
+     @IBAction func swipeShare(_ gesture: UISwipeGestureRecognizer) {
+        if UIDevice.current.orientation.isLandscape {
+            
+                if (gesture.direction == .left){
+                    shareTapped(im: bigView.asImage())
+                  }
+        }else{
+        if (gesture.direction == .up){
+            shareTapped(im: bigView.asImage())
+            }
+        }
+        }
+        
+     
      
      
     @objc func shareTapped(im : UIImage) {

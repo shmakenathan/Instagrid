@@ -46,5 +46,11 @@
 		<string>ThirstySoftRegular.otf</string>
 		<string>Delm-Medium.otf</string>
 	</array>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>PLEASE</string>
+	<key>NSCameraUsageDescription</key>
+	<string>PLEASE</string>
+	<key>C</key>
+	<string></string>
 </dict>
 </plist>
