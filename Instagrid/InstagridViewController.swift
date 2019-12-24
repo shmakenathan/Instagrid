@@ -90,7 +90,8 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         self.dismiss(animated: true, completion: nil)
     }
-    //change l'image du boutons par une autre en l'adaptant sans la deformer
+    
+    // Change l'image du boutons par une autre en l'adaptant sans la deformer
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[.originalImage] as? UIImage {
             currentButton!.setImage(image, for: .normal)
@@ -99,8 +100,7 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
         picker.dismiss(animated: true, completion: nil)
     }
     
-    
-    //fonction Bonus pour changer la couleur des bordures de l'image a partager selon un tableau de 5 couleurs
+    // Fonction Bonus pour changer la couleur des bordures de l'image a partager selon un tableau de 5 couleurs
     @IBAction func changeBorder(_ gesture: UISwipeGestureRecognizer){
         let tabColor : [UIColor] = [UIColor.red,UIColor.black,UIColor.purple,UIColor.green,UIColor(red: 23/255, green: 101/255, blue: 156/255, alpha: 1)]
         if (gesture.direction == .right){
@@ -112,7 +112,7 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
           }
     }
     
-    // permet de gerer les Swipe dans l'application
+    // Permet de gerer les Swipe dans l'application
     func initializeSwipe(){
         
         let leftSwipe = UISwipeGestureRecognizer(target: self, action: #selector(swipeShare(_:)))
@@ -128,7 +128,7 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
         view.addGestureRecognizer(rightSwipe)
     }
    
-     // partager l'image avec l'animation de sortie d'ecran selon l'orientation paysage ou portrait
+     // Partager l'image avec l'animation de sortie d'ecran selon l'orientation paysage ou portrait
      @IBAction func swipeShare(_ gesture: UISwipeGestureRecognizer) {
             if UIDevice.current.orientation.isLandscape {
                 if (gesture.direction == .left){
@@ -139,20 +139,21 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
                     shareTapped(im: bigView.asImage())
                 }
             }else{
-                if (gesture.direction == .up){
-                    UIView.animate(withDuration: 1){
-                        self.bigView.transform = CGAffineTransform(translationX: 0, y: -200)
-                        self.bigView.alpha = 0
+                if UIDevice.current.orientation.isPortrait {
+                    if (gesture.direction == .up){
+                        UIView.animate(withDuration: 1){
+                            self.bigView.transform = CGAffineTransform(translationX: 0, y: -200)
+                            self.bigView.alpha = 0
+                        }
+                        shareTapped(im: bigView.asImage())
                     }
-                    shareTapped(im: bigView.asImage())
                 }
             }
         }
-        
+    
     // Fonction permettant de partage une image
     @objc func shareTapped(im : UIImage) {
         let vc = UIActivityViewController(activityItems: [im], applicationActivities: [])
-        vc.popoverPresentationController?.barButtonItem = navigationItem.rightBarButtonItem
         present(vc, animated: true)
         vc.completionWithItemsHandler = {  activity, success, items, error in
             UIView.animate(withDuration: 0.5, animations: {
