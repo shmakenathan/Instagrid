@@ -70,18 +70,16 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
     func camera(){
         if UIImagePickerController.isSourceTypeAvailable(.camera){
             let myPickerController = UIImagePickerController()
-            myPickerController.delegate = self;
+            myPickerController.delegate = self
             myPickerController.sourceType = .camera
             self.present(myPickerController, animated: true, completion: nil)
-        } else {
-            print("")
         }
     }
     
     func photoLibrary(){
         if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
             let myPickerController = UIImagePickerController()
-            myPickerController.delegate = self;
+            myPickerController.delegate = self
             myPickerController.sourceType = .photoLibrary
             self.present(myPickerController, animated: true, completion: nil)
         }
@@ -94,8 +92,8 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
     // Change l'image du boutons par une autre en l'adaptant sans la deformer
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let image = info[.originalImage] as? UIImage {
-            currentButton!.setImage(image, for: .normal)
-            currentButton!.imageView?.contentMode = .scaleAspectFill
+            currentButton?.setImage(image, for: .normal)
+            currentButton?.imageView?.contentMode = .scaleAspectFill
         }
         picker.dismiss(animated: true, completion: nil)
     }
