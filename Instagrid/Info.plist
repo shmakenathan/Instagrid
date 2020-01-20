@@ -50,7 +50,7 @@
 	<string>PLEASE</string>
 	<key>NSCameraUsageDescription</key>
 	<string>PLEASE</string>
-	<key>C</key>
-	<string></string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>PLEASE</string>
 </dict>
 </plist>

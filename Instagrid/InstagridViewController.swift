@@ -57,32 +57,30 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
     
     func showActionSheet() {
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        if UIImagePickerController.isSourceTypeAvailable(.camera){
         actionSheet.addAction(UIAlertAction(title: "Camera", style: .default, handler: { (alert:UIAlertAction!) -> Void in
             self.camera()
-        }))
+        }))}
+         if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
         actionSheet.addAction(UIAlertAction(title: "Gallery", style: .default, handler: { (alert:UIAlertAction!) -> Void in
             self.photoLibrary()
-        }))
+        }))}
         actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         self.present(actionSheet, animated: true, completion: nil)
     }
     
     func camera(){
-        if UIImagePickerController.isSourceTypeAvailable(.camera){
             let myPickerController = UIImagePickerController()
             myPickerController.delegate = self
             myPickerController.sourceType = .camera
             self.present(myPickerController, animated: true, completion: nil)
-        }
     }
     
     func photoLibrary(){
-        if UIImagePickerController.isSourceTypeAvailable(.photoLibrary){
             let myPickerController = UIImagePickerController()
             myPickerController.delegate = self
             myPickerController.sourceType = .photoLibrary
             self.present(myPickerController, animated: true, completion: nil)
-        }
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -128,13 +126,14 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
    
      // Partager l'image avec l'animation de sortie d'ecran selon l'orientation paysage ou portrait
      @IBAction func swipeShare(_ gesture: UISwipeGestureRecognizer) {
+        let image : UIImage = bigView.asImage()
             if UIDevice.current.orientation.isLandscape {
                 if (gesture.direction == .left){
                     UIView.animate(withDuration: 1) {
                         self.bigView.transform = CGAffineTransform(translationX: -200, y: 0)
                         self.bigView.alpha = 0
                     }
-                    shareTapped(im: bigView.asImage())
+                    self.shareTapped(im: image)
                 }
             }else{
                 if UIDevice.current.orientation.isPortrait {
@@ -143,16 +142,27 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
                             self.bigView.transform = CGAffineTransform(translationX: 0, y: -200)
                             self.bigView.alpha = 0
                         }
-                        shareTapped(im: bigView.asImage())
+                        self.shareTapped(im: image)
                     }
                 }
             }
         }
     
+    func shareTapped(im : UIImage){
+        let share = UIActivityViewController(activityItems: [im], applicationActivities: nil)
+        self.present(share, animated: true, completion: nil)
+        // Permet de faire l'animation inverse à la fermeture de la fenêtre de partage
+        share.completionWithItemsHandler = {  activity, success, items, error in
+            UIView.animate(withDuration: 0.5, animations: {
+                self.bigView.transform = .identity
+                self.bigView.alpha = 1
+            }, completion: nil)
+        }
+    }
     // Fonction permettant de partage une image
-    @objc func shareTapped(im : UIImage) {
-        let vc = UIActivityViewController(activityItems: [im], applicationActivities: [])
-        present(vc, animated: true)
+   /* @objc func shareTapped(im : UIImage) {
+        let vc = UIActivityViewController(activityItems: [im], applicationActivities:nil)
+        self.present(vc, animated: true ,completion: nil)
         vc.completionWithItemsHandler = {  activity, success, items, error in
             UIView.animate(withDuration: 0.5, animations: {
                 self.bigView.transform = .identity
@@ -160,7 +170,7 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
             }, completion: nil)
         }
     }
-    
+    */
     
 
 }
