@@ -38,6 +38,7 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
         addButtons(in: topStackView, amount: layout.top)
         addButtons(in: botStackView, amount: layout.bot)
     }
+    //ajoute des boutons en fonction du layout selectionne
     private func addButtons(in stackView: UIStackView, amount: Int) {
         clear(stackView: stackView)
         for _ in 1...amount {
@@ -49,6 +50,7 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
             stackView.addArrangedSubview(buttonToAdd)
         }
     }
+    //permet de vider la stackview pour pouvoir en rajoute si besoin (perte de l'image selectionné)
     private func clear(stackView: UIStackView) {
         for arrangedSubbviews in stackView.arrangedSubviews {
             arrangedSubbviews.removeFromSuperview()
