@@ -198,6 +198,7 @@
                         </subviews>
                         <color key="backgroundColor" red="0.73937171697616577" green="0.83848279714584351" blue="0.89020609855651855" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                         <constraints>
+                            <constraint firstItem="8b4-Tt-YWE" firstAttribute="trailing" secondItem="No8-ji-vNS" secondAttribute="trailing" id="1f8-6U-ZNL"/>
                             <constraint firstItem="fMU-gj-nrs" firstAttribute="centerX" secondItem="oId-d3-Pbj" secondAttribute="centerX" identifier="34" id="1wk-5b-s5r"/>
                             <constraint firstItem="8b4-Tt-YWE" firstAttribute="top" secondItem="No8-ji-vNS" secondAttribute="top" id="3mU-Cs-lzv"/>
                             <constraint firstItem="No8-ji-vNS" firstAttribute="centerY" secondItem="oId-d3-Pbj" secondAttribute="centerY" id="8Tp-i0-5bH"/>
@@ -238,6 +239,7 @@
                                 <exclude reference="aVH-5H-hw4"/>
                                 <exclude reference="Dco-Dh-JJv"/>
                                 <exclude reference="v3W-JX-NaO"/>
+                                <exclude reference="1f8-6U-ZNL"/>
                                 <exclude reference="3mU-Cs-lzv"/>
                                 <exclude reference="Ayg-bO-0im"/>
                                 <exclude reference="G8C-6R-lEp"/>
@@ -262,6 +264,7 @@
                                 <include reference="L8N-FP-q2C"/>
                                 <include reference="SuM-Hc-dWm"/>
                                 <include reference="v3W-JX-NaO"/>
+                                <include reference="1f8-6U-ZNL"/>
                                 <include reference="Ayg-bO-0im"/>
                                 <include reference="G8C-6R-lEp"/>
                             </mask>
@@ -280,6 +283,7 @@
                                 <exclude reference="SuM-Hc-dWm"/>
                                 <include reference="aVH-5H-hw4"/>
                                 <include reference="Dco-Dh-JJv"/>
+                                <exclude reference="1f8-6U-ZNL"/>
                                 <include reference="3mU-Cs-lzv"/>
                                 <exclude reference="Ayg-bO-0im"/>
                                 <include reference="HLR-sC-Mxo"/>
@@ -302,6 +306,7 @@
                                 <include reference="aVH-5H-hw4"/>
                                 <include reference="Dco-Dh-JJv"/>
                                 <exclude reference="v3W-JX-NaO"/>
+                                <exclude reference="1f8-6U-ZNL"/>
                                 <include reference="3mU-Cs-lzv"/>
                                 <exclude reference="Ayg-bO-0im"/>
                                 <exclude reference="G8C-6R-lEp"/>
