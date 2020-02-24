@@ -34,38 +34,40 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
         }
     }
     
-    // Share the image with the screen output animation according to landscape or portrait orientation
+    /// Share the image with the screen output animation according to landscape or portrait orientation
     @IBAction func swipeShare(_ gesture: UISwipeGestureRecognizer) {
         let image: UIImage = gridContainerView.asImage()
-        if UIDevice.current.orientation.isLandscape {
-            if gesture.direction == .left {
-                animateGridView(direction: .left)
-                }
-                self.shareTapped(image: image)
-            
-        } else {
-            if UIDevice.current.orientation.isPortrait {
-                if gesture.direction == .up {
-                    animateGridView(direction: .up)
-                    self.shareTapped(image: image)
-                }
-            }
-        }
+        
+        animateGridView(direction: gesture.direction)
+        shareTapped(image: image)
     }
     
-    @objc private func insertImage(_ sender: UIButton) {
-        currentButton = sender
-        showActionSheet()
-    }
+
     
     // MARK: Methods - Internal
     
-    internal func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        initializeSwipes()
+        selectLayoutWith(tag: 2)
+    }
+    
+    //
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        
+        let isLandscape = UIDevice.current.orientation.isLandscape
+        
+        shareLabel.text = isLandscape ? "Swipe left to share" : "Swipe up to share"
+        swipeToShareGestureRecognizer.direction = isLandscape ? .left : .up
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         self.dismiss(animated: true, completion: nil)
     }
     
-    //Change the image of the buttons by another one by adapting it without distorting it
-    internal func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+    ///Change the image of the buttons by another one by adapting it without distorting it
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         if let image = info[.originalImage] as? UIImage {
             currentButton?.setImage(image, for: .normal)
             currentButton?.imageView?.contentMode = .scaleAspectFill
@@ -78,26 +80,47 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
     private let tabColor: [UIColor] = [.red, .black, .purple, .green, UIColor(red: 23/255, green: 101/255, blue: 156/255, alpha: 1)]
     private var currentButton: UIButton?
     private var gridFrameColorIndex = 0
-    let swipeToShareGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(swipeShare(_:)))
     
+    private lazy var swipeToShareGestureRecognizer: UISwipeGestureRecognizer = {
+        let gesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeShare(_:)))
+        gesture.direction = .up
+        view.addGestureRecognizer(gesture)
+        return gesture
+    }()
     
+    private lazy var swipeToChangeFrameColorGestureRecognizer: UISwipeGestureRecognizer = {
+        let gesture = UISwipeGestureRecognizer(target: self, action: #selector(changeBorder(_:)))
+        gesture.direction = .right
+        view.addGestureRecognizer(gesture)
+        return gesture
+    }()
     
     // MARK: Methods - Private
     
-    //Allows you to select a layout according to a predefined model
+    private func initializeSwipes() {
+        swipeToShareGestureRecognizer.direction = .up
+        swipeToChangeFrameColorGestureRecognizer.direction = .right
+    }
+    
+    @objc private func insertImage(_ sender: UIButton) {
+        currentButton = sender
+        showActionSheet()
+    }
+    
+    ///Allows you to select a layout according to a predefined model
     private func selectLayoutWith(tag: Int) {
         selectLayoutImageViewAccordingTo(tag: tag)
         let layout = Layout.layouts[tag - 1]
         generate(layout: layout)
     }
     
-    //add buttons in stack view
+    ///add buttons in stack view
     private func generate(layout: Layout) {
         addButtons(in: topStackView, amount: layout.top)
         addButtons(in: botStackView, amount: layout.bot)
     }
     
-    //ajoute des boutons en fonction du layout selectionne
+    ///ajoute des boutons en fonction du layout selectionne
     private func addButtons(in stackView: UIStackView, amount: Int) {
         clear(stackView: stackView)
         for _ in 1...amount {
@@ -110,7 +133,7 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
         }
     }
     
-    //allows to empty the stackview (loss of the selected image)
+    ///allows to empty the stackview (loss of the selected image)
     private func clear(stackView: UIStackView) {
         for arrangedSubbviews in stackView.arrangedSubviews {
             arrangedSubbviews.removeFromSuperview()
@@ -149,7 +172,6 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
     private func addPhotoAction(to actionSheet: UIAlertController, with sourceType: UIImagePickerController.SourceType) {
         guard sourceType != .savedPhotosAlbum else { return }
         if UIImagePickerController.isSourceTypeAvailable(sourceType) {
-            /////////////////////////////////////////////////////////////
             let title = sourceType == .camera ? "Camera" : "Gallery"
             let alertAction = UIAlertAction(title: title, style: .default, handler: { _ in self.presentImagePickerController(with: sourceType)
             })
@@ -162,35 +184,6 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
         myPickerController.delegate = self
         myPickerController.sourceType = sourceType
         self.present(myPickerController, animated: true, completion: nil)
-    }
-
-    
-
-    //
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        coordinator.animate(alongsideTransition: nil) { _ in
-            
-            if UIDevice.current.orientation.isLandscape {
-                self.shareLabel.text = "Swipe left to share"
-                self.swipeToShareGestureRecognizer.direction = .left
-            }else{
-                self.shareLabel.text = "Swipe up to share"
-            }
-        }
-    }
-    
-    // Permet de gerer les Swipe dans l'application
-    private func initializeSwipe() {
-        
-        let upSwipe = UISwipeGestureRecognizer(target: self, action: #selector(swipeShare(_:)))
-        let swipeToChangeFrameColorGestureRecognizer = UISwipeGestureRecognizer(target: self, action: #selector(changeBorder(_:)))
-        //swipeToShareGestureRecognizer.direction = .left
-        upSwipe.direction = .up
-        swipeToChangeFrameColorGestureRecognizer.direction = .right
-        //view.addGestureRecognizer(swipeToShareGestureRecognizer)
-        view.addGestureRecognizer(upSwipe)
-        view.addGestureRecognizer(swipeToChangeFrameColorGestureRecognizer)
     }
     
     private func animateGridView(direction: UISwipeGestureRecognizer.Direction) {
@@ -214,11 +207,7 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
             }, completion: nil)
         }
     }
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        initializeSwipe()
-        selectLayoutWith(tag: 2)
-    }
+    
 }
 
 //Permet de convertir une vue en Image
