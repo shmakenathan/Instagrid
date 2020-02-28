@@ -14,8 +14,10 @@ class Layout {
         Layout(top: 2, bot: 1),
         Layout(top: 2, bot: 2)
     ]
+    
     var top: Int
     var bot: Int
+    
     init(top: Int, bot: Int) {
         self.top = top
         self.bot = bot
