@@ -8,7 +8,7 @@
 
 import UIKit
 
-class InstagridViewController: UIViewController, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+class InstagridViewController: UIViewController {
     
     // MARK: IBOutlet
     
@@ -35,11 +35,11 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
     }
     
     /// Share the image with the screen output animation according to landscape or portrait orientation
-    @IBAction func swipeShare(_ gesture: UISwipeGestureRecognizer) {
-        let image: UIImage = gridContainerView.asImage()
+    @IBAction func didSwipeToShare(_ gesture: UISwipeGestureRecognizer) {
+        let imageToShare = renderGridLayoutAsImage()
         
         animateGridView(direction: gesture.direction)
-        shareTapped(image: image)
+        openShareViewController(image: imageToShare)
     }
     
 
@@ -62,18 +62,6 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
         swipeToShareGestureRecognizer.direction = isLandscape ? .left : .up
     }
     
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        self.dismiss(animated: true, completion: nil)
-    }
-    
-    /// Change the image of the buttons by another one by adapting it without distorting it
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        if let image = info[.originalImage] as? UIImage {
-            currentButton?.setImage(image, for: .normal)
-            currentButton?.imageView?.contentMode = .scaleAspectFill
-        }
-        picker.dismiss(animated: true, completion: nil)
-    }
     
     // MARK: Properties - Private
     
@@ -83,7 +71,7 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
     
     
     private lazy var swipeToShareGestureRecognizer: UISwipeGestureRecognizer = {
-        let gesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeShare(_:)))
+        let gesture = UISwipeGestureRecognizer(target: self, action: #selector(didSwipeToShare(_:)))
         gesture.direction = .up
         view.addGestureRecognizer(gesture)
         return gesture
@@ -198,11 +186,11 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
         }
     }
     
-    private func shareTapped(image: UIImage) {
+    private func openShareViewController(image: UIImage) {
         let share = UIActivityViewController(activityItems: [image], applicationActivities: nil)
         self.present(share, animated: true, completion: nil)
-        /// Permet de faire l'animation inverse à la fermeture de la fenêtre de partage
-        share.completionWithItemsHandler = {  activity, success, items, error in
+        ///Allows you to do the reverse animation when closing the sharing window
+        share.completionWithItemsHandler = { _, _, _, _ in
             UIView.animate(withDuration: 0.5, animations: {
                 self.gridContainerView.transform = .identity
                 self.gridContainerView.alpha = 1
@@ -210,12 +198,29 @@ class InstagridViewController: UIViewController, UINavigationControllerDelegate,
         }
     }
     
-}
-
-/// Convert a view to an image
-extension UIView {
-    func asImage() -> UIImage {
-        let renderer = UIGraphicsImageRenderer(bounds: bounds)
-        return renderer.image { rendererContext in layer.render(in: rendererContext.cgContext)}
+    private func renderGridLayoutAsImage() -> UIImage {
+        let renderer = UIGraphicsImageRenderer(bounds: gridContainerView.bounds)
+        return renderer.image { rendererContext in gridContainerView.layer.render(in: rendererContext.cgContext)}
     }
 }
+
+extension InstagridViewController: UINavigationControllerDelegate {
+    
+}
+
+extension InstagridViewController: UIImagePickerControllerDelegate {
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
+    }
+    
+    /// Change the image of the buttons by another one by adapting it without distorting it
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
+        if let image = info[.originalImage] as? UIImage {
+            currentButton?.setImage(image, for: .normal)
+            currentButton?.imageView?.contentMode = .scaleAspectFill
+        }
+        picker.dismiss(animated: true, completion: nil)
+    }
+}
+
